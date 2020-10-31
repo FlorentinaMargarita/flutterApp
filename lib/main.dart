@@ -68,16 +68,20 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future _showNotification() async {
-    // var androidDetails = new AndroidNotificationDetails(
-    //     "ChannelId", "Epap", "Remember to upload your receipts!",
-    //     importance: Importance.max);
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+            "ChannelId", "Epap", "Remember to upload your receipts!",
+            importance: Importance.max, priority: Priority.high);
     // var iosDetails = new IOSNotificationDetails();
     // var generalNotificationDetails =
     //     NotificationDetails(android: androidDetails, iOS: iosDetails);
-
-    // await flutterLocalNotificationsPlugin.show(
-    //     0, "Upload", "You created a new reminder", generalNotificationDetails,
-    //     payload: "Task");
+    const NotificationDetails firstNotificationPlatformSpecifics =
+        NotificationDetails(android: androidDetails);
+    await flutterLocalNotificationsPlugin.show(
+        1,
+        'Epap-Client',
+        'Always remember to upload your receipts...',
+        firstNotificationPlatformSpecifics);
 
 //hier koennte ich dann statt seconds days schreiben
 
@@ -99,10 +103,30 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: RaisedButton(
-            onPressed: _showNotification, child: Text("I want a hamburger")),
+      appBar: AppBar(
+        title: Text("Hello Epap-Client!"),
+        leading: Icon(Icons.access_alarm),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: () {},
+          )
+        ],
       ),
+      body: Center(
+          child: Column(
+        children: [
+          Text(
+            "Hello Flutter !",
+            style: TextStyle(fontSize: 24),
+          ),
+          RaisedButton(
+              onPressed: _showNotification, child: Text("I want a hamburger"))
+        ],
+      )
+          // child: RaisedButton(
+          //     onPressed: _showNotification, child: Text("I want a hamburger")),
+          ),
     );
   }
 
