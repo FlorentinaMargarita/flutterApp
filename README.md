@@ -1,6 +1,6 @@
-# hi
+# Habit Tracker App in Flutter
 
-A new Flutter project.
+My first Flutter project.
 
 ## Getting Started
 
