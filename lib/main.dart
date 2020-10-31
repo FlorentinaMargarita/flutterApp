@@ -65,7 +65,14 @@ class _MyHomePageState extends State<MyHomePage> {
         onSelectNotification: notificationSelected);
   }
 
-  _showNotification() {}
+  Future _showNotification() async {
+    var androidDetails = new AndroidNotificationDetails(
+        "ChannelId", "Epap", "Remember to upload your receipts!",
+        importance: Importance.max);
+    var iosDetails = new IOSNotificationDetails();
+    var generalNotificationDetails =
+        NotificationDetails(androidDetails, iosDetails);
+  }
 
   @override
   Widget build(BuildContext context) {
