@@ -56,10 +56,10 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    var androidInitilize = new AndroidInitializationSettings('epap_icon');
+    var androidInitilize = new AndroidInitializationSettings('epap_icon2.png');
     var iOSInitilize = new IOSInitializationSettings();
-    var initializationSettings =
-        new InitializationSettings(androidInitilize, iOSInitilize);
+    var initializationSettings = new InitializationSettings(
+        android: androidInitilize, iOS: iOSInitilize);
     flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onSelectNotification: notificationSelected);
@@ -71,7 +71,10 @@ class _MyHomePageState extends State<MyHomePage> {
         importance: Importance.max);
     var iosDetails = new IOSNotificationDetails();
     var generalNotificationDetails =
-        NotificationDetails(androidDetails, iosDetails);
+        NotificationDetails(android: androidDetails, iOS: iosDetails);
+
+    await flutterLocalNotificationsPlugin.show(
+        0, "Upload", "You created a new reminder", generalNotificationDetails);
   }
 
   @override
@@ -79,8 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: Center(
         child: RaisedButton(
-            onPressed: _showNotification,
-            child: Text("My first flutter notification")),
+            onPressed: _showNotification, child: Text("I want a hamburger")),
       ),
     );
   }
