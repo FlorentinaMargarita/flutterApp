@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 void main() {
   runApp(MyApp());
@@ -66,15 +68,32 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future _showNotification() async {
-    var androidDetails = new AndroidNotificationDetails(
-        "ChannelId", "Epap", "Remember to upload your receipts!",
-        importance: Importance.max);
-    var iosDetails = new IOSNotificationDetails();
-    var generalNotificationDetails =
-        NotificationDetails(android: androidDetails, iOS: iosDetails);
+    // var androidDetails = new AndroidNotificationDetails(
+    //     "ChannelId", "Epap", "Remember to upload your receipts!",
+    //     importance: Importance.max);
+    // var iosDetails = new IOSNotificationDetails();
+    // var generalNotificationDetails =
+    //     NotificationDetails(android: androidDetails, iOS: iosDetails);
 
-    await flutterLocalNotificationsPlugin.show(
-        0, "Upload", "You created a new reminder", generalNotificationDetails);
+    // await flutterLocalNotificationsPlugin.show(
+    //     0, "Upload", "You created a new reminder", generalNotificationDetails,
+    //     payload: "Task");
+
+//hier koennte ich dann statt seconds days schreiben
+
+    // var scheduleTime = DateTime.now().add(Duration(seconds: 3));
+
+    flutterLocalNotificationsPlugin.zonedSchedule(
+        0,
+        'upload',
+        'You created a new reminder',
+        tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
+        const NotificationDetails(
+            android: AndroidNotificationDetails(
+                "ChannelId", "Epap", "Remember to upload your receipts!")),
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime);
   }
 
   @override
@@ -87,5 +106,12 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Future notificationSelected(String payload) async {}
+  Future notificationSelected(String payload) async {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text("Notification Clicked $payload"),
+      ),
+    );
+  }
 }
