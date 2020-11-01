@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'calendar.dart';
 
 void main() {
   runApp(MyApp());
@@ -26,15 +27,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -43,6 +35,20 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  DateTime selectedDate = DateTime.now();
+
+  _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2025),
+    );
+    if (picked != null && picked != selectedDate)
+      setState(() {
+        selectedDate = picked;
+      });
+  }
 
   @override
   void initState() {
@@ -93,48 +99,55 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Receipt Reminder",
-            style: TextStyle(color: Colors.greenAccent)),
-        leading: Icon(Icons.access_alarm),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.refresh),
-            onPressed: () {},
-          )
-        ],
-      ),
-      body: Center(
+        appBar: AppBar(
+          title: Text("Receipt Reminder",
+              style: TextStyle(color: Colors.greenAccent)),
+          leading: Icon(Icons.access_alarm),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.refresh),
+              onPressed: () {},
+            )
+          ],
+        ),
+        body: Center(
           child: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Text(
-              "Hello Epap-Client !",
-              style: TextStyle(
-                fontSize: 24,
+            children: [
+              Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Text(
+                  "Hello Epap-Client !",
+                  style: TextStyle(
+                    fontSize: 24,
+                  ),
+                ),
               ),
-            ),
+              Padding(
+                padding: EdgeInsets.all(30.0),
+                child: new Container(
+                  color: Colors.grey[20],
+                  height: 200,
+                  width: 200,
+                  child: new Image.network(
+                    'https://is5-ssl.mzstatic.com/image/thumb/Purple124/v4/42/d0/20/42d02062-d787-6c49-d74f-a9f3ee7ea160/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.png',
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(30.0),
+                child: RaisedButton(
+                    onPressed: _showNotification,
+                    child: Text("What did I still want to do?")),
+                // Image.asset('assets/epap_icon2.png')
+              ),
+              RaisedButton(
+                  child: Text(
+                    "Pick a Date",
+                  ),
+                  onPressed: () => _selectDate(context)),
+            ],
           ),
-          Padding(
-            padding: EdgeInsets.all(30.0),
-            child: new Image.network(
-              'https://is5-ssl.mzstatic.com/image/thumb/Purple124/v4/42/d0/20/42d02062-d787-6c49-d74f-a9f3ee7ea160/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.png',
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(30.0),
-            child: RaisedButton(
-                onPressed: _showNotification,
-                child: Text("What did I still want to do?")),
-            // Image.asset('assets/epap_icon2.png')
-          )
-        ],
-      )
-          // child: RaisedButton(
-          //     onPressed: _showNotification, child: Text("I want a hamburger")),
-          ),
-    );
+        ));
   }
 
   Future notificationSelected(String payload) async {
