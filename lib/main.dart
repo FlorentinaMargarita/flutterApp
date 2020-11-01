@@ -161,21 +161,31 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 RaisedButton(
-                  child: Text("What are my current reminders?"),
+                  child: Text("What are my current reminder?"),
                   onPressed: _showNotification,
                 ),
                 Padding(
                     padding: EdgeInsets.all(1.0),
                     // onPressed: write,
-                    child: TextFormField(
+                    child: TextField(
                         decoration: InputDecoration(
-                      icon: Icon(Icons.access_alarms),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(32.0)),
-                      hintText: 'Enter an EPAP-reminder',
-                      contentPadding: new EdgeInsets.symmetric(
-                          vertical: 15.0, horizontal: 5.0),
-                    ))),
+                          icon: Icon(Icons.access_alarms),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(32.0)),
+                          hintText: 'Enter an EPAP-reminder',
+                          contentPadding: new EdgeInsets.symmetric(
+                              vertical: 15.0, horizontal: 5.0),
+                        ),
+                        onSubmitted: (String value) async {
+                          await showDialog<void>(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                    title: const Text('Remember!'),
+                                    content:
+                                        Text('Do not forget to "$value".'));
+                              });
+                        })),
                 // Image.asset('assets/epap_icon2.png')
 
                 // RaisedButton(
