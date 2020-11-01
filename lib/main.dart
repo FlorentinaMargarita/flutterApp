@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-import 'calendar.dart';
 
 void main() {
   runApp(MyApp());
@@ -39,11 +38,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2025),
-    );
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2025),
+        helpText: "Pick a date, when we should remind you.",
+        cancelText: "Cancel",
+        confirmText: "Remind Me Epap!");
     if (picked != null && picked != selectedDate)
       setState(() {
         selectedDate = picked;
@@ -102,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
         appBar: AppBar(
           title: Text("Receipt Reminder",
               style: TextStyle(color: Colors.greenAccent)),
-          leading: Icon(Icons.access_alarm),
+          leading: Icon(Icons.account_balance_wallet_rounded),
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.refresh),
