@@ -4,6 +4,7 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'dart:async';
 import 'dart:ui';
+import 'dart:io';
 
 void main() {
   runApp(MyApp());
@@ -36,6 +37,18 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  // final int id;
+  // final String title;
+  // final String body;
+  // final String payload;
+  // // _MyHomePageState({this.id, this.body, this.payload, this.title})
+
+  // final rxSub.BehaviorSubject<_MyHomePageState>
+  //     didReceiveLocalNotificationSubject =
+  //     rxSub.BehaviorSubject<_MyHomePageState>();
+  // final rxSub.BehaviorSubject<String> selectNotificationSubject =
+  //     rxSub.BehaviorSubject<String>();
+
   DateTime selectedDate = DateTime.now();
 
   _selectDate(BuildContext context) async {
@@ -69,8 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future _showNotification() async {
     const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-            "ChannelId", "Epap", "Remember to upload your receipts!",
+        AndroidNotificationDetails("ChannelId", "Epap", "mario",
             importance: Importance.max, priority: Priority.high);
     // var iosDetails = new IOSNotificationDetails();
     // var generalNotificationDetails =
@@ -87,6 +99,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // var scheduleTime = DateTime.now().add(Duration(seconds: 3));
 
+//DIE KRUX IST HIER BEIM SCHEDULING!
+
     flutterLocalNotificationsPlugin.zonedSchedule(
         0,
         'upload',
@@ -98,6 +112,14 @@ class _MyHomePageState extends State<MyHomePage> {
         androidAllowWhileIdle: true,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime);
+  }
+
+  // var wart = {print("Hello " + stdin.readLineSync())};
+
+  void write() {
+    print("What's your name? ");
+    var name = stdin.readLineSync();
+    print("Hi, $name!");
   }
 
   @override
@@ -116,65 +138,76 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         body: Center(
           child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.all(10.0),
-                child: Text(
-                  "Hello Epap-Client !",
-                  style: TextStyle(
-                    fontSize: 24,
+              // crossAxisAlignment: CrossAxisAlignment.center, MainAxisAlignment,start
+              children: [
+                // Padding(
+                //   padding: EdgeInsets.all(10.0),
+                //   child: Text(
+                //     "Hello Epap-Client !",
+                //     style: TextStyle(
+                //       fontSize: 24,
+                //     ),
+                //   ),
+                // ),
+                Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: new Container(
+                    color: Colors.grey[20],
+                    height: 200,
+                    width: 200,
+                    child: new Image.network(
+                      'https://is5-ssl.mzstatic.com/image/thumb/Purple124/v4/42/d0/20/42d02062-d787-6c49-d74f-a9f3ee7ea160/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.png',
+                    ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.all(10.0),
-                child: new Container(
-                  color: Colors.grey[20],
-                  height: 200,
-                  width: 200,
-                  child: new Image.network(
-                    'https://is5-ssl.mzstatic.com/image/thumb/Purple124/v4/42/d0/20/42d02062-d787-6c49-d74f-a9f3ee7ea160/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.png',
-                  ),
+                RaisedButton(
+                  child: Text("What are my current reminders?"),
+                  onPressed: _showNotification,
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.all(10.0),
-                child: RaisedButton(
-                    onPressed: _showNotification,
-                    child: Text("What did I still want to do?")),
+                Padding(
+                    padding: EdgeInsets.all(1.0),
+                    // onPressed: write,
+                    child: TextFormField(
+                        decoration: InputDecoration(
+                      icon: Icon(Icons.access_alarms),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(32.0)),
+                      hintText: 'Enter an EPAP-reminder',
+                      contentPadding: new EdgeInsets.symmetric(
+                          vertical: 15.0, horizontal: 5.0),
+                    ))),
                 // Image.asset('assets/epap_icon2.png')
-              ),
-              RaisedButton(
-                child: Text('Get active notifications'),
-                onPressed: () async {
-                  await _getActiveNotifications();
-                },
-              ),
-              RaisedButton(
-                child: Text("Cancel notification"),
-                onPressed: () async {
-                  await _cancelNotification();
-                },
-              ),
-              RaisedButton(
-                child: Text('Show notification without timestamp'),
-                onPressed: () async {
-                  await _showNotificationWithoutTimestamp();
-                },
-              ),
-              RaisedButton(
-                child: Text('Show notification with custom timestamp'),
-                onPressed: () async {
-                  await _showNotificationWithCustomTimestamp();
-                },
-              ),
-              RaisedButton(
-                  child: Text(
-                    "Pick a Date",
-                  ),
-                  onPressed: () => _selectDate(context)),
-            ],
-          ),
+
+                // RaisedButton(
+                //   child: Text('Get active notifications'),
+                //   onPressed: () async {
+                //     await _getActiveNotifications();
+                //   },
+                // ),
+                // RaisedButton(
+                //   child: Text("Cancel notification"),
+                //   onPressed: () async {
+                //     await _cancelNotification();
+                //   },
+                // ),
+                // RaisedButton(
+                //   child: Text('Show notification without timestamp'),
+                //   onPressed: () async {
+                //     await _showNotificationWithoutTimestamp();
+                //   },
+                // ),
+                // RaisedButton(
+                //   child: Text('Show notification with custom timestamp'),
+                //   onPressed: () async {
+                //     await _showNotificationWithCustomTimestamp();
+                //   },
+                // ),
+                RaisedButton(
+                    child: Text(
+                      "Pick a Date",
+                    ),
+                    onPressed: () => _selectDate(context)),
+              ]),
         ));
   }
 
