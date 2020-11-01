@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'dart:async';
+import 'dart:ui';
 
 void main() {
   runApp(MyApp());
@@ -54,6 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    new AndroidInitializationSettings('app_icon');
     var androidInitilize =
         new AndroidInitializationSettings('assets/epap_icon2.png');
     var iOSInitilize = new IOSInitializationSettings();
@@ -101,7 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Receipt Reminder",
+          title: Text("Receipt Reminder Menu",
               style: TextStyle(color: Colors.greenAccent)),
           leading: Icon(Icons.account_balance_wallet_rounded),
           actions: <Widget>[
@@ -115,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.all(20.0),
+                padding: EdgeInsets.all(10.0),
                 child: Text(
                   "Hello Epap-Client !",
                   style: TextStyle(
@@ -124,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.all(30.0),
+                padding: EdgeInsets.all(10.0),
                 child: new Container(
                   color: Colors.grey[20],
                   height: 200,
@@ -135,11 +138,35 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.all(30.0),
+                padding: EdgeInsets.all(10.0),
                 child: RaisedButton(
                     onPressed: _showNotification,
                     child: Text("What did I still want to do?")),
                 // Image.asset('assets/epap_icon2.png')
+              ),
+              RaisedButton(
+                child: Text('Get active notifications'),
+                onPressed: () async {
+                  await _getActiveNotifications();
+                },
+              ),
+              RaisedButton(
+                child: Text("Cancel notification"),
+                onPressed: () async {
+                  await _cancelNotification();
+                },
+              ),
+              RaisedButton(
+                child: Text('Show notification without timestamp'),
+                onPressed: () async {
+                  await _showNotificationWithoutTimestamp();
+                },
+              ),
+              RaisedButton(
+                child: Text('Show notification with custom timestamp'),
+                onPressed: () async {
+                  await _showNotificationWithCustomTimestamp();
+                },
               ),
               RaisedButton(
                   child: Text(
@@ -158,5 +185,57 @@ class _MyHomePageState extends State<MyHomePage> {
         content: Text("Notification Clicked $payload"),
       ),
     );
+  }
+
+  Future<void> _cancelNotification() async {
+    await flutterLocalNotificationsPlugin.cancel(0);
+  }
+
+  Future<void> _getActiveNotifications() async {
+    await showDialog<void>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        content: Text("active notifications: "),
+        actions: <Widget>[
+          FlatButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showNotificationWithoutTimestamp() async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+            'your channel id', 'your channel name', 'your channel description',
+            importance: Importance.max,
+            priority: Priority.high,
+            showWhen: false);
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+        0, 'plain title', 'plain body', platformChannelSpecifics,
+        payload: 'item x');
+  }
+
+  Future<void> _showNotificationWithCustomTimestamp() async {
+    final AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'your channel id',
+      'your channel name',
+      'your channel description',
+      importance: Importance.max,
+      priority: Priority.high,
+      when: DateTime.now().millisecondsSinceEpoch - 120 * 1000,
+    );
+    final NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+        0, 'plain title', 'plain body', platformChannelSpecifics,
+        payload: 'item x');
   }
 }
