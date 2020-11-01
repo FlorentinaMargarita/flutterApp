@@ -12,21 +12,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'Epap App',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-        // This makes the visual density adapt to the platform that you run
-        // the app on. For desktop platforms, the controls will be smaller and
-        // closer together (more dense) than on mobile platforms.
+        primarySwatch: Colors.grey,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: MyHomePage(title: 'Flutter Demo Home Page'),
@@ -58,7 +47,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    var androidInitilize = new AndroidInitializationSettings('epap_icon2.png');
+    var androidInitilize =
+        new AndroidInitializationSettings('assets/epap_icon2.png');
     var iOSInitilize = new IOSInitializationSettings();
     var initializationSettings = new InitializationSettings(
         android: androidInitilize, iOS: iOSInitilize);
@@ -104,7 +94,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Hello Epap-Client!"),
+        title: Text("Receipt Reminder",
+            style: TextStyle(color: Colors.greenAccent)),
         leading: Icon(Icons.access_alarm),
         actions: <Widget>[
           IconButton(
@@ -116,12 +107,28 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
           child: Column(
         children: [
-          Text(
-            "Hello Flutter !",
-            style: TextStyle(fontSize: 24),
+          Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Text(
+              "Hello Epap-Client !",
+              style: TextStyle(
+                fontSize: 24,
+              ),
+            ),
           ),
-          RaisedButton(
-              onPressed: _showNotification, child: Text("I want a hamburger"))
+          Padding(
+            padding: EdgeInsets.all(30.0),
+            child: new Image.network(
+              'https://is5-ssl.mzstatic.com/image/thumb/Purple124/v4/42/d0/20/42d02062-d787-6c49-d74f-a9f3ee7ea160/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.png',
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(30.0),
+            child: RaisedButton(
+                onPressed: _showNotification,
+                child: Text("What did I still want to do?")),
+            // Image.asset('assets/epap_icon2.png')
+          )
         ],
       )
           // child: RaisedButton(
