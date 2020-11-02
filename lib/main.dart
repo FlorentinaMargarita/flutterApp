@@ -45,8 +45,8 @@ class _MyHomePageState extends State<MyHomePage> {
   final myController = TextEditingController();
   int counter = 0;
   String data;
-  // var listOne = [];
-  // var listTwo = [];
+  var listOne = [];
+  // var stringList = listOne.join("");
 
   getStringValuesSF() async {
     SharedPreferences value = await SharedPreferences.getInstance();
@@ -117,10 +117,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     UserPreferences().data = myController.text;
                     setState(() {
                       data = UserPreferences().data;
+                      listOne.add(data);
                     });
                   }),
             ),
-            Text(data ?? '', style: TextStyle(fontSize: 30)),
+            // Text(data ?? ' ', style: TextStyle(fontSize: 30)),
+            Text(listOne.join("")),
             //
             Padding(
               padding: EdgeInsets.all(10.0),
@@ -133,12 +135,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
+            // RaisedButton(
+            //   child: Text("What are my current reminders?"),
+            //   onPressed: _showNotification,
+            // ),
             RaisedButton(
-              child: Text("What are my current reminders?"),
-              onPressed: _showNotification,
-            ),
-            RaisedButton(
-              child: Text('Get active notifications'),
+              child: Text('What are my current reminders?'),
               onPressed: () async {
                 await _getActiveNotifications();
               },
@@ -201,7 +203,7 @@ class _MyHomePageState extends State<MyHomePage> {
     await showDialog<void>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        content: Text(data == ' ' ? "no reminders" : data),
+        content: Text(data == ' ' ? "no reminders" : listOne.join("")),
         actions: <Widget>[
           FlatButton(
             onPressed: () {
