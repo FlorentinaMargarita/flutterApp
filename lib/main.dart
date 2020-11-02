@@ -7,8 +7,21 @@ import 'dart:ui';
 import 'user_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // var initializationSettingsAndroid =
+  //     AndroidInitializationSettings('codex_logo');
+  // var initializationSettings = InitializationSettings();
+  // await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+  //     onSelectNotification: (String payload) async {
+  //   if (payload != null) {
+  //     debugPrint('notification payload: ' + payload);
+  //   }
+  // });
   await UserPreferences().init();
   runApp(MyApp());
 }
@@ -46,6 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final myController = TextEditingController();
   int counter = 0;
   String data;
+  String dropdownValue = 'When should we remind you?';
   var listOne = [];
 
   getStringValuesSF() async {
@@ -102,7 +116,6 @@ class _MyHomePageState extends State<MyHomePage> {
             IconButton(
               icon: Icon(Icons.home_outlined),
               onPressed: _launchURL,
-              //  () {},
             )
           ],
         ),
@@ -111,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Padding(
-              padding: EdgeInsets.all(10.0),
+              padding: EdgeInsets.all(1.0),
               child: TextField(
                   controller: myController,
                   decoration: InputDecoration(
@@ -131,11 +144,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     });
                   }),
             ),
-            // Text(data ?? ' ', style: TextStyle(fontSize: 30)),
-            Text(listOne.join("")),
+            Text(listOne.join(", ")),
             //
             Padding(
-              padding: EdgeInsets.all(10.0),
+              padding: EdgeInsets.all(1.0),
               child: new Container(
                 color: Colors.grey[20],
                 height: 200,
@@ -168,6 +180,14 @@ class _MyHomePageState extends State<MyHomePage> {
             //       "Pick a Date",
             //     ),
             //     onPressed: () => _selectDate(context)),
+
+            RaisedButton(
+              child: Text('Repeat notification every minute'),
+              onPressed: () async {
+                await _repeatNotification();
+              },
+            ),
+
             RaisedButton(
               onPressed: () async {
                 await flutterLocalNotificationsPlugin.zonedSchedule(
@@ -213,13 +233,65 @@ class _MyHomePageState extends State<MyHomePage> {
                 Navigator.pop(context);
               },
               child: const Text('Remind me daily'),
+            ),
+            DropdownButton(
+              icon: Icon(Icons.alarm_add_outlined),
+              iconSize: 24,
+              elevation: 16,
+              style: TextStyle(color: Colors.deepPurple),
+              underline: Container(
+                height: 2,
+                color: Colors.deepPurpleAccent,
+              ),
+              onChanged: (String newValue) {
+                setState(() {
+                  dropdownValue = newValue;
+                });
+              },
+              items: <String>['Daily', 'On a specific date', 'Every Hour']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  // value: dropdownValue,
+                  child: Text(value),
+                );
+              }).toList(),
             )
           ],
         )));
-
-    //   ]),
-    // ));
   }
+
+  Future<void> _repeatNotification() async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails('repeating channel id',
+            'repeating channel name', 'repeating description');
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.periodicallyShow(
+        0,
+        listOne[1],
+        listOne.join(" ,"),
+        RepeatInterval.everyMinute,
+        platformChannelSpecifics,
+        androidAllowWhileIdle: true);
+  }
+
+  // Future<void> _scheduleDailyTenAMNotification() async {
+  //   await flutterLocalNotificationsPlugin.zonedSchedule(
+  //       0,
+  //       'daily scheduled notification title',
+  //       'daily scheduled notification body',
+  //       _nextInstanceOfTenAM(),
+  //       const NotificationDetails(
+  //         android: AndroidNotificationDetails(
+  //             'daily notification channel id',
+  //             'daily notification channel name',
+  //             'daily notification description'),
+  //       ),
+  //       androidAllowWhileIdle: true,
+  //       uiLocalNotificationDateInterpretation:
+  //           UILocalNotificationDateInterpretation.absoluteTime,
+  //       matchDateTimeComponents: DateTimeComponents.time);
+  // }
 
   Future notificationSelected(String message) async {
     showDialog(
@@ -241,27 +313,27 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  // Future _showNotification() async {
-  //   const AndroidNotificationDetails androidDetails =
-  //       AndroidNotificationDetails("ChannelId", "Epap", "mario",
-  //           importance: Importance.max, priority: Priority.high);
+  Future _showNotification() async {
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails("ChannelId", "Epap", "mario",
+            importance: Importance.max, priority: Priority.high);
 
-  //   const NotificationDetails firstNotificationPlatformSpecifics =
-  //       NotificationDetails(android: androidDetails);
-  //   await flutterLocalNotificationsPlugin.show(1, 'Epap-Client',
-  //       myController.text, firstNotificationPlatformSpecifics);
-//}
+    const NotificationDetails firstNotificationPlatformSpecifics =
+        NotificationDetails(android: androidDetails);
+    await flutterLocalNotificationsPlugin.show(1, 'Epap-Client',
+        myController.text, firstNotificationPlatformSpecifics);
 
-  //  await flutterLocalNotificationsPlugin.zonedSchedule(
-  //       0,
-  //       'upload',
-  //       'You created a new reminder',
-  //       tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
-  //       const NotificationDetails(
-  //           android: AndroidNotificationDetails("ChannelId", "Epap", "e")),
-  //       androidAllowWhileIdle: true,
-  //       uiLocalNotificationDateInterpretation:
-  //           UILocalNotificationDateInterpretation.absoluteTime);
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+        0,
+        'upload',
+        'You created a new reminder',
+        tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
+        const NotificationDetails(
+            android: AndroidNotificationDetails("ChannelId", "Epap", "e")),
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime);
+  }
 
   Future<void> _cancelAllNotifications() async {
     await flutterLocalNotificationsPlugin.cancelAll();
@@ -271,7 +343,7 @@ class _MyHomePageState extends State<MyHomePage> {
     await showDialog<void>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        content: Text(data == ' ' ? "no reminders" : listOne.join("")),
+        content: Text(data == ' ' ? "no reminders" : listOne.join(", ")),
         actions: <Widget>[
           FlatButton(
             onPressed: () {
@@ -285,8 +357,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-Future<String> $message;
+// Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+// Future<String> $message;
 
 class SharedPreferences {
   static Future<SharedPreferences> getInstance() {}
