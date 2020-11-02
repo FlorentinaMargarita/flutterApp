@@ -149,6 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Text("Cancel notification"),
                 onPressed: () {
                   setState(() {
+                    listOne = [];
                     data = ' ';
                   });
                 }),
