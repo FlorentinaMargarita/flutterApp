@@ -10,6 +10,9 @@ class UserPreferences {
 
   SharedPreferences _prefs;
 
+  var listOne = [];
+  var listTwo = [];
+
   init() async {
     _prefs = await SharedPreferences.getInstance();
   }
@@ -20,7 +23,15 @@ class UserPreferences {
 
   set data(String value) {
     _prefs.setString('data', value);
+    // listOne.add(data);
+    // _prefs.setStringList('list', listOne);
   }
+
+  // Future<Null> addString() async {
+  //   final SharedPreferences prefs = _prefs;
+  //   listOne.add(data);
+  //   prefs.setStringList('list', listOne);
+  // }
 
   // delete(String value) {
   //   _prefs.remove(value);
@@ -36,7 +47,16 @@ class UserPreferences {
   // SharedPreferences preferences = await SharedPreferences.getInstance();
 
   delete(String value) async {
-    await _prefs.clear();
+    await _prefs.remove(data);
+  }
+
+  clearItems() async {
+    final SharedPreferences prefs = _prefs;
+    prefs.clear();
+    // setState(() {
+    //   listOne = [];
+    //   listTwo = [];
+    // });
   }
 
   Future setJwtToken(String value) {

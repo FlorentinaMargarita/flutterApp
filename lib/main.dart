@@ -46,12 +46,23 @@ class _MyHomePageState extends State<MyHomePage> {
   final myController = TextEditingController();
   int counter = 0;
   String data;
+  // var listOne = [];
+  // var listTwo = [];
 
   getStringValuesSF() async {
     SharedPreferences value = await SharedPreferences.getInstance();
-    String stringValue = value.getString(myController.text);
+    String stringValue = value.getString(data);
     return stringValue;
   }
+
+  // Future<Null> addString() async {
+  //   final SharedPreferences prefs = await _prefs;
+  //   listOne.add(myController.text);
+  //   prefs.setStringList('list', listOne);
+  //   setState(() {
+  //     myController.text = '';
+  //   });
+  // }
 
   // removeValues() async {
   //   SharedPreferences value = await SharedPreferences.getInstance();
@@ -156,9 +167,10 @@ class _MyHomePageState extends State<MyHomePage> {
             // }),
             Text(data ?? '', style: TextStyle(fontSize: 30)),
             RaisedButton(
-                child: Text("add an a"),
+                child: Text("add a notification"),
                 onPressed: () {
-                  UserPreferences().data = data + 'a';
+                  // UserPreferences().data = data + 'a';
+                  UserPreferences().data = myController.text;
                   setState(() {
                     data = UserPreferences().data;
                   });
@@ -166,7 +178,11 @@ class _MyHomePageState extends State<MyHomePage> {
             RaisedButton(
                 child: Text("delete an a"),
                 onPressed: () {
-                  UserPreferences().delete(data);
+                  setState(() {
+                    data = ' ';
+                  });
+                  // return data;
+                  // UserPreferences().delete(data);
                 }),
             Padding(
               padding: EdgeInsets.all(10.0),
@@ -191,8 +207,10 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             RaisedButton(
                 child: Text("Cancel notification"),
-                onPressed: () async {
-                  await _cancelAllNotifications();
+                onPressed: () {
+                  setState(() {
+                    data = ' ';
+                  });
                 }),
             RaisedButton(
                 child: Text(
@@ -257,7 +275,7 @@ class _MyHomePageState extends State<MyHomePage> {
     await showDialog<void>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        content: Text(myController.text),
+        content: Text(data),
         actions: <Widget>[
           FlatButton(
             onPressed: () {
