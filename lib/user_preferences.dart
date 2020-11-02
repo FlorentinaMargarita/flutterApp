@@ -53,13 +53,5 @@ class UserPreferences {
   clearItems() async {
     final SharedPreferences prefs = _prefs;
     prefs.clear();
-    // setState(() {
-    //   listOne = [];
-    //   listTwo = [];
-    // });
-  }
-
-  Future setJwtToken(String value) {
-    return _prefs.setString('jwtToken', value);
   }
 }

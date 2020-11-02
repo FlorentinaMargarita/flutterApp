@@ -46,12 +46,18 @@ class _MyHomePageState extends State<MyHomePage> {
   int counter = 0;
   String data;
   var listOne = [];
-  // var stringList = listOne.join("");
 
   getStringValuesSF() async {
     SharedPreferences value = await SharedPreferences.getInstance();
     String stringValue = value.getString(data);
     return stringValue;
+  }
+
+  _showTime(BuildContext context) async {
+    final TimeOfDay picked = await showTimePicker(
+      initialTime: TimeOfDay.now(),
+      context: context,
+    );
   }
 
   _selectDate(BuildContext context) async {
@@ -99,8 +105,9 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
         body: Center(
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+            child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
             Padding(
               padding: EdgeInsets.all(10.0),
               child: TextField(
@@ -153,13 +160,62 @@ class _MyHomePageState extends State<MyHomePage> {
                     data = ' ';
                   });
                 }),
+            // RaisedButton(
+            //     child: Text(
+            //       "Pick a Date",
+            //     ),
+            //     onPressed: () => _selectDate(context)),
             RaisedButton(
-                child: Text(
-                  "Pick a Date",
-                ),
-                onPressed: () => _selectDate(context)),
-          ]),
-        ));
+              onPressed: () async {
+                await flutterLocalNotificationsPlugin.zonedSchedule(
+                    0,
+                    data,
+                    _selectDate(context),
+                    tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
+                    const NotificationDetails(
+                        android: AndroidNotificationDetails(
+                            'full screen channel id',
+                            'full screen channel name',
+                            'full screen channel description',
+                            priority: Priority.high,
+                            importance: Importance.high,
+                            fullScreenIntent: true)),
+                    androidAllowWhileIdle: true,
+                    uiLocalNotificationDateInterpretation:
+                        UILocalNotificationDateInterpretation.absoluteTime);
+
+                Navigator.pop(context);
+              },
+              child: const Text('Pick date'),
+            ),
+            RaisedButton(
+              onPressed: () async {
+                await flutterLocalNotificationsPlugin.zonedSchedule(
+                    0,
+                    data,
+                    _showTime(context),
+                    tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
+                    const NotificationDetails(
+                        android: AndroidNotificationDetails(
+                            'full screen channel id',
+                            'full screen channel name',
+                            'full screen channel description',
+                            priority: Priority.high,
+                            importance: Importance.high,
+                            fullScreenIntent: true)),
+                    androidAllowWhileIdle: true,
+                    uiLocalNotificationDateInterpretation:
+                        UILocalNotificationDateInterpretation.absoluteTime);
+
+                Navigator.pop(context);
+              },
+              child: const Text('Remind me daily'),
+            )
+          ],
+        )));
+
+    //   ]),
+    // ));
   }
 
   Future notificationSelected(String message) async {
@@ -173,28 +229,27 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Future _showNotification() async {
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails("ChannelId", "Epap", "mario",
-            importance: Importance.max, priority: Priority.high);
+  // Future _showNotification() async {
+  //   const AndroidNotificationDetails androidDetails =
+  //       AndroidNotificationDetails("ChannelId", "Epap", "mario",
+  //           importance: Importance.max, priority: Priority.high);
 
-    const NotificationDetails firstNotificationPlatformSpecifics =
-        NotificationDetails(android: androidDetails);
-    // const message = '$value';
-    await flutterLocalNotificationsPlugin.show(1, 'Epap-Client',
-        myController.text, firstNotificationPlatformSpecifics);
+  //   const NotificationDetails firstNotificationPlatformSpecifics =
+  //       NotificationDetails(android: androidDetails);
+  //   await flutterLocalNotificationsPlugin.show(1, 'Epap-Client',
+  //       myController.text, firstNotificationPlatformSpecifics);
+//}
 
-    flutterLocalNotificationsPlugin.zonedSchedule(
-        0,
-        'upload',
-        'You created a new reminder',
-        tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
-        const NotificationDetails(
-            android: AndroidNotificationDetails("ChannelId", "Epap", "e")),
-        androidAllowWhileIdle: true,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime);
-  }
+  //  await flutterLocalNotificationsPlugin.zonedSchedule(
+  //       0,
+  //       'upload',
+  //       'You created a new reminder',
+  //       tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
+  //       const NotificationDetails(
+  //           android: AndroidNotificationDetails("ChannelId", "Epap", "e")),
+  //       androidAllowWhileIdle: true,
+  //       uiLocalNotificationDateInterpretation:
+  //           UILocalNotificationDateInterpretation.absoluteTime);
 
   Future<void> _cancelAllNotifications() async {
     await flutterLocalNotificationsPlugin.cancelAll();
