@@ -12,6 +12,8 @@ class UserPreferences {
 
   var listOne = [];
   var listTwo = [];
+  DateTime date;
+  String id;
 
   init() async {
     _prefs = await SharedPreferences.getInstance();
@@ -53,5 +55,28 @@ class UserPreferences {
   clearItems() async {
     final SharedPreferences prefs = _prefs;
     prefs.clear();
+  }
+
+  static const amountField = 'amount'; // will be in ml
+  static const dateField = 'date';
+
+  UserPreferences.temp() {
+    this.date = DateTime.now();
+  }
+
+  UserPreferences.fromDb(Map<String, dynamic> json, String id) {
+    this.id = id;
+    this.date = json[dateField].toDate();
+  }
+
+  // Map<String, dynamic> toJson() {
+  //   return {
+  //     dateField: Timestamp.fromDate(this.date),
+  //   };
+  // }
+
+  @override
+  String toString() {
+    return 'date: $date';
   }
 }

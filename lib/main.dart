@@ -5,15 +5,15 @@ import 'package:timezone/timezone.dart' as tz;
 import 'dart:async';
 import 'dart:ui';
 import 'user_preferences.dart';
+import 'package:epap/models/notification.data.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter/services.dart';
-import 'package:device_info/device_info.dart';
+// import 'package:flutter/services.dart';
+// import 'package:device_info/device_info.dart';
 import 'package:rxdart/subjects.dart';
+import 'dart:developer' as developer;
 
-
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-   
+// final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+//     FlutterLocalNotificationsPlugin();
 
 final BehaviorSubject<String> selectNotificationSubject =
     BehaviorSubject<String>();
@@ -54,7 +54,6 @@ class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
   final String title;
-  
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -62,9 +61,23 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-  
 
   DateTime selectedDate = DateTime.now();
+
+  // void _initializeNotifications() {
+  //   flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  //   //final initializationSettingsAndroid =
+  //   AndroidInitializationSettings('secondary_icon');
+  //   //final initializationSettingsIOS = IOSInitializationSettings();
+  //   final initializationSettings = InitializationSettings(
+  //       // initializationSettingsAndroid,
+  //       // initializationSettingsIOS,
+  //       );
+  //   flutterLocalNotificationsPlugin.initialize(
+  //     initializationSettings,
+  //     onSelectNotification: onSelectNotification,
+  //   );
+  // }
 
   final myController = TextEditingController();
   int counter = 0;
@@ -85,6 +98,16 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  Future showNotification() async {
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails("ChannelId", "Epap", "mario");
+
+    const NotificationDetails firstNotificationPlatformSpecifics =
+        NotificationDetails(android: androidDetails);
+    await flutterLocalNotificationsPlugin.show(
+        1, 'Epap-Client', 'hallo du depp', firstNotificationPlatformSpecifics);
+  }
+
   _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
         context: context,
@@ -100,10 +123,12 @@ class _MyHomePageState extends State<MyHomePage> {
       });
   }
 
-  @override
+  // _MyHomePageState() {
+  //   _initializeNotifications();
+  // }
+
   void initState() {
     super.initState();
-    _configureDidReceiveLocalNotificationSubject();
     data = UserPreferences().data;
     new AndroidInitializationSettings('app_icon');
     var androidInitilize =
@@ -114,6 +139,12 @@ class _MyHomePageState extends State<MyHomePage> {
     flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onSelectNotification: notificationSelected);
+  }
+
+  Future onSelectNotification(String payload) async {
+    if (payload != null) {
+      print('notification payload: ' + payload);
+    }
   }
 
   @override
@@ -168,10 +199,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
               ),
-              // RaisedButton(
-              //   child: Text("What are my current reminders?"),
-              //   onPressed: _showNotification,
-              // ),
               RaisedButton(
                 child: Text('What are my current reminders?'),
                 onPressed: () async {
@@ -186,20 +213,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       data = ' ';
                     });
                   }),
-     RaisedButton(
+              RaisedButton(
                 child: Text('Repeat notification every minute'),
                 onPressed: () async {
                   await _repeatNotification(UserPreferences().data);
                 },
               ),
-
-                RaisedButton(
-                child: Text('show'),
-                onPressed: () async {
-                  await _showNotification(data);
-                },
-                          ),
-
               RaisedButton(
                 onPressed: () async {
                   await flutterLocalNotificationsPlugin.zonedSchedule(
@@ -266,18 +285,6 @@ class _MyHomePageState extends State<MyHomePage> {
         androidAllowWhileIdle: true);
   }
 
-    Future<void> _showNotification(String data) async {
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails("ChannelId", "Epap", "mario",
-            importance: Importance.max, priority: Priority.high);
-
-    const NotificationDetails firstNotificationPlatformSpecifics =
-        NotificationDetails(android: androidDetails);
-    await flutterLocalNotificationsPlugin.show(1, 'Epap-Client',
-      data, firstNotificationPlatformSpecifics);
-        }
-
-
   Future notificationSelected(String message) async {
     showDialog(
       context: context,
@@ -297,18 +304,6 @@ class _MyHomePageState extends State<MyHomePage> {
       throw 'Could not launch $url';
     }
   }
-
-    // await flutterLocalNotificationsPlugin.zonedSchedule(
-    //     0,
-    //     'upload',
-    //     'You created a new reminder',
-    //     tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
-    //     const NotificationDetails(
-    //         android: AndroidNotificationDetails("ChannelId", "Epap", "e")),
-    //     androidAllowWhileIdle: true,
-    //     uiLocalNotificationDateInterpretation:
-    //         UILocalNotificationDateInterpretation.absoluteTime);
-  
 
   Future<void> _cancelAllNotifications() async {
     await flutterLocalNotificationsPlugin.cancelAll();
@@ -331,9 +326,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-// Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-// Future<String> $message;
 
 class SharedPreferences {
   static Future<SharedPreferences> getInstance() {}
