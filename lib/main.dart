@@ -72,6 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // final _formKey = GlobalKey<FormState>();
 
   final myController = TextEditingController();
+  int index = 1;
 
   // _printLatestValue() {
   //   print("Second text field: ${myController.value}");
@@ -98,11 +99,12 @@ class _MyHomePageState extends State<MyHomePage> {
       });
   }
 
-  @override
-  void initState() async {
-    final prefs = await SharedPreferences.getInstance();
-    value = prefs.getString('value') ?? ' ';
+  // async {
+  // final prefs = await SharedPreferences.getInstance();
+  // value = prefs.getString('value') ?? ' ';
 
+  @override
+  void initState() {
     super.initState();
     new AndroidInitializationSettings('app_icon');
     var androidInitilize =
@@ -132,7 +134,28 @@ class _MyHomePageState extends State<MyHomePage> {
         body: Center(
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-            TextField(controller: myController),
+            TextField(
+                controller: myController,
+                decoration: InputDecoration(
+                  icon: Icon(Icons.access_alarms),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(32.0)),
+                  hintText: 'Enter an EPAP-reminder',
+                  contentPadding:
+                      new EdgeInsets.symmetric(vertical: 15.0, horizontal: 5.0),
+                ),
+                onSubmitted: (String value) async {
+                  // prefs.setString('$value');
+                  await showDialog<void>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                            title: const Text('Remember!'),
+                            content:
+                                Text('Do not forget to' + myController.text));
+                      });
+                }),
+            // key: 1,
             RaisedButton(
                 child: Text('Change Data'),
                 onPressed: () {
@@ -157,31 +180,10 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             RaisedButton(
-              child: Text("What are my current reminder?"),
+              child: Text("What are my current reminders?"),
               onPressed: _showNotification,
             ),
-            Padding(
-                padding: EdgeInsets.all(1.0),
-                child: TextField(
-                    // key: _formKey,
-                    decoration: InputDecoration(
-                      icon: Icon(Icons.access_alarms),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(32.0)),
-                      hintText: 'Enter an EPAP-reminder',
-                      contentPadding: new EdgeInsets.symmetric(
-                          vertical: 15.0, horizontal: 5.0),
-                    ),
-                    onSubmitted: (String value) async {
-                      // prefs.setString('$value');
-                      await showDialog<void>(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                                title: const Text('Remember!'),
-                                content: Text('Do not forget to "$value".'));
-                          });
-                    })),
+            Padding(padding: EdgeInsets.all(1.0), child: TextField()),
             RaisedButton(
               child: Text('Get active notifications'),
               onPressed: () async {
@@ -191,7 +193,7 @@ class _MyHomePageState extends State<MyHomePage> {
             RaisedButton(
                 child: Text("Cancel notification"),
                 // onPressed: _printLatestValue(),
-                onPressed: () => getStringValuesSF()),
+                onPressed: _cancelNotification),
             RaisedButton(
                 child: Text(
                   "Pick a Date",
@@ -216,7 +218,7 @@ class _MyHomePageState extends State<MyHomePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        content: Text("Notification Clicked $message"),
+        content: Text("Your reminder is: " + myController.text),
       ),
     );
   }
@@ -229,8 +231,8 @@ class _MyHomePageState extends State<MyHomePage> {
     const NotificationDetails firstNotificationPlatformSpecifics =
         NotificationDetails(android: androidDetails);
     // const message = '$value';
-    await flutterLocalNotificationsPlugin.show(
-        1, 'Epap-Client', 'message', firstNotificationPlatformSpecifics);
+    await flutterLocalNotificationsPlugin.show(1, 'Epap-Client',
+        myController.text, firstNotificationPlatformSpecifics);
 
     flutterLocalNotificationsPlugin.zonedSchedule(
         0,
@@ -245,7 +247,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _cancelNotification() async {
-    await flutterLocalNotificationsPlugin.cancel(0);
+    await flutterLocalNotificationsPlugin.cancel(index);
   }
 
   Future<void> _getActiveNotifications() async {
