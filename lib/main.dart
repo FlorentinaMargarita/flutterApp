@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -5,31 +6,12 @@ import 'package:timezone/timezone.dart' as tz;
 import 'dart:async';
 import 'dart:ui';
 import 'user_preferences.dart';
-import 'package:epap/models/notification.data.dart';
 import 'package:url_launcher/url_launcher.dart';
-// import 'package:flutter/services.dart';
-// import 'package:device_info/device_info.dart';
 import 'package:rxdart/subjects.dart';
-import 'dart:developer' as developer;
 
-// final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-//     FlutterLocalNotificationsPlugin();
-
-final BehaviorSubject<String> selectNotificationSubject =
-    BehaviorSubject<String>();
-
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // var initializationSettingsAndroid =
-  //     AndroidInitializationSettings('codex_logo');
-  // var initializationSettings = InitializationSettings();
-  // await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-  //     onSelectNotification: (String payload) async {
-  //   if (payload != null) {
-  //     debugPrint('notification payload: ' + payload);
-  //   }
-  // });
   await UserPreferences().init();
   runApp(MyApp());
 }
@@ -45,7 +27,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.grey,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Flutter Epap'),
     );
   }
 }
@@ -60,24 +42,33 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   DateTime selectedDate = DateTime.now();
 
-  // void _initializeNotifications() {
-  //   flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  //   //final initializationSettingsAndroid =
-  //   AndroidInitializationSettings('secondary_icon');
-  //   //final initializationSettingsIOS = IOSInitializationSettings();
-  //   final initializationSettings = InitializationSettings(
-  //       // initializationSettingsAndroid,
-  //       // initializationSettingsIOS,
-  //       );
-  //   flutterLocalNotificationsPlugin.initialize(
-  //     initializationSettings,
-  //     onSelectNotification: onSelectNotification,
-  //   );
-  // }
+  final BehaviorSubject<String> selectNotificationSubject =
+      BehaviorSubject<String>();
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  _initializeNotifications() async {
+    final NotificationAppLaunchDetails notificationAppLaunchDetails =
+        await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('app_icon');
+
+    final InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: (String payload) async {
+      if (payload != null) {
+        debugPrint('notification payload: $payload');
+      }
+      selectNotificationSubject.add(payload);
+    });
+  }
 
   final myController = TextEditingController();
   int counter = 0;
@@ -92,9 +83,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   _showTime(BuildContext context) async {
-    final TimeOfDay picked = await showTimePicker(
-      initialTime: TimeOfDay.now(),
+    final TimeOfDay timePicked = await showTimePicker(
       context: context,
+      initialTime: TimeOfDay.now(),
     );
   }
 
@@ -104,12 +95,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
     const NotificationDetails firstNotificationPlatformSpecifics =
         NotificationDetails(android: androidDetails);
-    await flutterLocalNotificationsPlugin.show(
-        1, 'Epap-Client', 'hallo du depp', firstNotificationPlatformSpecifics);
+    await flutterLocalNotificationsPlugin.show(1, 'Epap-Client',
+        'ich weiss alles', firstNotificationPlatformSpecifics);
   }
 
   _selectDate(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
+    final DateTime datePicked = await showDatePicker(
         context: context,
         initialDate: selectedDate,
         firstDate: DateTime(2000),
@@ -117,33 +108,16 @@ class _MyHomePageState extends State<MyHomePage> {
         helpText: "Pick a date, when we should remind you.",
         cancelText: "Cancel",
         confirmText: "Remind Me Epap!");
-    if (picked != null && picked != selectedDate)
+    if (datePicked != null && datePicked != selectedDate)
       setState(() {
-        selectedDate = picked;
+        selectedDate = datePicked;
+        tz.TZDateTime.now(tz.local);
       });
   }
 
-  // _MyHomePageState() {
-  //   _initializeNotifications();
-  // }
-
-  void initState() {
-    super.initState();
-    data = UserPreferences().data;
-    new AndroidInitializationSettings('app_icon');
-    var androidInitilize =
-        new AndroidInitializationSettings('assets/epap_icon2.png');
-    var iOSInitilize = new IOSInitializationSettings();
-    var initializationSettings = new InitializationSettings(
-        android: androidInitilize, iOS: iOSInitilize);
-    flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
-    flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: notificationSelected);
-  }
-
-  Future onSelectNotification(String payload) async {
-    if (payload != null) {
-      print('notification payload: ' + payload);
+  Future onSelectNotification(String data) async {
+    if (UserPreferences().data != null) {
+      print('notification payload: ' + UserPreferences().data);
     }
   }
 
@@ -187,7 +161,17 @@ class _MyHomePageState extends State<MyHomePage> {
                     }),
               ),
               Text(listOne.join(", ")),
-              //
+              RaisedButton(
+                  textColor: Colors.white,
+                  padding: const EdgeInsets.all(20.0),
+                  color: CupertinoColors.systemGrey3,
+                  hoverColor: CupertinoColors.activeBlue,
+                  child: Text("What are my current reminders?",
+                      style: TextStyle(fontSize: 20)),
+                  onPressed: () async {
+                    await _getActiveNotifications();
+                    await _initializeNotifications();
+                  }),
               Padding(
                 padding: EdgeInsets.all(10.0),
                 child: new Container(
@@ -198,12 +182,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     'https://is5-ssl.mzstatic.com/image/thumb/Purple124/v4/42/d0/20/42d02062-d787-6c49-d74f-a9f3ee7ea160/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.png',
                   ),
                 ),
-              ),
-              RaisedButton(
-                child: Text('What are my current reminders?'),
-                onPressed: () async {
-                  await _getActiveNotifications();
-                },
               ),
               RaisedButton(
                   child: Text("Cancel notification"),
@@ -223,7 +201,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () async {
                   await flutterLocalNotificationsPlugin.zonedSchedule(
                       0,
-                      data,
+                      UserPreferences().data,
                       _selectDate(context),
                       tz.TZDateTime.now(tz.local)
                           .add(const Duration(seconds: 5)),
@@ -241,7 +219,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                   Navigator.pop(context);
                 },
-                child: const Text('Pick date'),
+                child: const Text('Pick a start date'),
               ),
               RaisedButton(
                 onPressed: () async {
@@ -303,10 +281,6 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       throw 'Could not launch $url';
     }
-  }
-
-  Future<void> _cancelAllNotifications() async {
-    await flutterLocalNotificationsPlugin.cancelAll();
   }
 
   Future<void> _getActiveNotifications() async {
