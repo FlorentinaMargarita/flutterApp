@@ -4,9 +4,12 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'dart:async';
 import 'dart:ui';
-import 'dart:io';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'user_preferences.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await UserPreferences().init();
   runApp(MyApp());
 }
 
@@ -42,6 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final myController = TextEditingController();
   int counter = 0;
+  String data;
 
   getStringValuesSF() async {
     SharedPreferences value = await SharedPreferences.getInstance();
@@ -49,11 +53,11 @@ class _MyHomePageState extends State<MyHomePage> {
     return stringValue;
   }
 
-  removeValues() async {
-    SharedPreferences value = await SharedPreferences.getInstance();
-    //Remove String
-    value.remove();
-  }
+  // removeValues() async {
+  //   SharedPreferences value = await SharedPreferences.getInstance();
+  //   //Remove String
+  //   value.remove();
+  // }
 
   // deleteMessage() async {
   // SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -86,6 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    data = UserPreferences().data;
     new AndroidInitializationSettings('app_icon');
     var androidInitilize =
         new AndroidInitializationSettings('assets/epap_icon2.png');
@@ -138,17 +143,31 @@ class _MyHomePageState extends State<MyHomePage> {
                   }),
             ),
             // key: 1,
-            RaisedButton(
-                child: Text('Change Data'), onPressed: () => {counter++}
-                // return showDialog(
-                //   context: context,
-                //   builder: (context) {
-                //     return AlertDialog(
-                //       content: Text(myController.text),
-                //     );
+            // RaisedButton(
+            //     child: Text('Change Data'), onPressed: () => {counter++}
+            //     // return showDialog(
+            //     //   context: context,
+            //     //   builder: (context) {
+            //     //     return AlertDialog(
+            //     //       content: Text(myController.text),
+            //     //     );
 
-                ),
+            //     ),
             // }),
+            Text(data ?? '', style: TextStyle(fontSize: 30)),
+            RaisedButton(
+                child: Text("add an a"),
+                onPressed: () {
+                  UserPreferences().data = data + 'a';
+                  setState(() {
+                    data = UserPreferences().data;
+                  });
+                }),
+            RaisedButton(
+                child: Text("delete an a"),
+                onPressed: () {
+                  UserPreferences().delete(data);
+                }),
             Padding(
               padding: EdgeInsets.all(10.0),
               child: new Container(
@@ -164,7 +183,6 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Text("What are my current reminders?"),
               onPressed: _showNotification,
             ),
-            Padding(padding: EdgeInsets.all(1.0), child: TextField()),
             RaisedButton(
               child: Text('Get active notifications'),
               onPressed: () async {
@@ -172,12 +190,10 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             RaisedButton(
-              child: Text("Cancel notification"),
-              onPressed: () => removeValues(),
-              // onPressed: () async {
-              //   await _cancelAllNotifications();
-              //                 }
-            ),
+                child: Text("Cancel notification"),
+                onPressed: () async {
+                  await _cancelAllNotifications();
+                }),
             RaisedButton(
                 child: Text(
                   "Pick a Date",
@@ -187,10 +203,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ));
   }
 
-  // addStringToSF() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   prefs.getString(prefs);
-  // }
   // getStringValuesSF() async {
   //   SharedPreferences prefs = await SharedPreferences.getInstance();
   //   //Return String
