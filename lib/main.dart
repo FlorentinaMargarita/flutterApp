@@ -4,7 +4,6 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'dart:async';
 import 'dart:ui';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 
 void main() {
@@ -36,47 +35,13 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class SharedPrefs {
-  static SharedPreferences _sharedPrefs;
-
-  init() async {
-    if (_sharedPrefs == null) {
-      _sharedPrefs = await SharedPreferences.getInstance();
-    }
-  }
-
-  String get username => _sharedPrefs.getString(keyUsername) ?? "";
-
-  set username(String value) {
-    _sharedPrefs.setString(keyUsername, value);
-  }
-}
-
-final sharedPrefs = SharedPrefs();
-// constants/strings.dart
-const String keyUsername = "key_username";
-
 class _MyHomePageState extends State<MyHomePage> {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   DateTime selectedDate = DateTime.now();
-  String value;
-
-  // @override
-  // void initState() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   data = prefs.getString('data') ?? ' ';
-
-  //   super.initState();
-  // }
-  // final _formKey = GlobalKey<FormState>();
 
   final myController = TextEditingController();
-  int index = 1;
-
-  // _printLatestValue() {
-  //   print("Second text field: ${myController.value}");
-  // }
+  int counter = 0;
 
   getStringValuesSF() async {
     SharedPreferences value = await SharedPreferences.getInstance();
@@ -84,6 +49,21 @@ class _MyHomePageState extends State<MyHomePage> {
     return stringValue;
   }
 
+  removeValues() async {
+    SharedPreferences value = await SharedPreferences.getInstance();
+    //Remove String
+    value.remove();
+  }
+
+  // deleteMessage() async {
+  // SharedPreferences preferences = await SharedPreferences.getInstance();
+  //     preferences.clear();
+  // }
+
+  //   deleteMessage() async {}
+  // SharedPreferences value = await SharedPreferences.getInstance();
+  // await stringValue.clear();
+  // }
   _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
         context: context,
@@ -134,40 +114,41 @@ class _MyHomePageState extends State<MyHomePage> {
         body: Center(
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-            TextField(
-                controller: myController,
-                decoration: InputDecoration(
-                  icon: Icon(Icons.access_alarms),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(32.0)),
-                  hintText: 'Enter an EPAP-reminder',
-                  contentPadding:
-                      new EdgeInsets.symmetric(vertical: 15.0, horizontal: 5.0),
-                ),
-                onSubmitted: (String value) async {
-                  // prefs.setString('$value');
-                  await showDialog<void>(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                            title: const Text('Remember!'),
-                            content:
-                                Text('Do not forget to' + myController.text));
-                      });
-                }),
+            Padding(
+              padding: EdgeInsets.all(10.0),
+              child: TextField(
+                  controller: myController,
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.access_alarms),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(32.0)),
+                    hintText: 'Enter an EPAP-reminder',
+                    contentPadding: new EdgeInsets.symmetric(
+                        vertical: 15.0, horizontal: 5.0),
+                  ),
+                  onSubmitted: (String value) async {
+                    await showDialog<void>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                              title: const Text('Remember!'),
+                              content:
+                                  Text('Do not forget to' + myController.text));
+                        });
+                  }),
+            ),
             // key: 1,
             RaisedButton(
-                child: Text('Change Data'),
-                onPressed: () {
-                  return showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        content: Text(myController.text),
-                      );
-                    },
-                  );
-                }),
+                child: Text('Change Data'), onPressed: () => {counter++}
+                // return showDialog(
+                //   context: context,
+                //   builder: (context) {
+                //     return AlertDialog(
+                //       content: Text(myController.text),
+                //     );
+
+                ),
+            // }),
             Padding(
               padding: EdgeInsets.all(10.0),
               child: new Container(
@@ -191,9 +172,12 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             RaisedButton(
-                child: Text("Cancel notification"),
-                // onPressed: _printLatestValue(),
-                onPressed: _cancelNotification),
+              child: Text("Cancel notification"),
+              onPressed: () => removeValues(),
+              // onPressed: () async {
+              //   await _cancelAllNotifications();
+              //                 }
+            ),
             RaisedButton(
                 child: Text(
                   "Pick a Date",
@@ -246,8 +230,15 @@ class _MyHomePageState extends State<MyHomePage> {
             UILocalNotificationDateInterpretation.absoluteTime);
   }
 
-  Future<void> _cancelNotification() async {
-    await flutterLocalNotificationsPlugin.cancel(index);
+  // _incrementCounter() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   int counter = (prefs.getInt('counter') ?? 0) + 1;
+  //   // print('Pressed $counter times.');
+  //   await prefs.setInt('counter', counter);
+  // }
+
+  Future<void> _cancelAllNotifications() async {
+    await flutterLocalNotificationsPlugin.cancelAll();
   }
 
   Future<void> _getActiveNotifications() async {
@@ -277,4 +268,8 @@ class SharedPreferences {
   String getString(String s) {}
 
   void setString(String message, String value) {}
+
+  getInt(String s) {}
+
+  setInt(String s, int counter) {}
 }
