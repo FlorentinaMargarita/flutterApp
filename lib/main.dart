@@ -5,9 +5,6 @@ import 'package:timezone/timezone.dart' as tz;
 import 'dart:async';
 import 'dart:ui';
 import 'user_preferences.dart';
-// import 'dart:html' as html;
-// import 'package:html/parser.dart' show parse;
-// import 'package:html/dom.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void main() async {
@@ -94,14 +91,6 @@ class _MyHomePageState extends State<MyHomePage> {
         onSelectNotification: notificationSelected);
   }
 
-  // @override
-  // void dispose() {
-  //   // Clean up the controller when the widget is removed from the widget tree.
-  //   // This also removes the _printLatestValue listener.
-  //   myController.dispose();
-  //   super.dispose();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
           leading: Icon(Icons.account_balance_wallet_rounded),
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.account_balance_rounded),
+              icon: Icon(Icons.home_outlined),
               onPressed: _launchURL,
               //  () {},
             )
