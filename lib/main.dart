@@ -5,6 +5,10 @@ import 'package:timezone/timezone.dart' as tz;
 import 'dart:async';
 import 'dart:ui';
 import 'user_preferences.dart';
+// import 'dart:html' as html;
+// import 'package:html/parser.dart' show parse;
+// import 'package:html/dom.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -107,8 +111,9 @@ class _MyHomePageState extends State<MyHomePage> {
           leading: Icon(Icons.account_balance_wallet_rounded),
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.refresh),
-              onPressed: () {},
+              icon: Icon(Icons.account_balance_rounded),
+              onPressed: _launchURL,
+              //  () {},
             )
           ],
         ),
@@ -236,6 +241,15 @@ class _MyHomePageState extends State<MyHomePage> {
             : "Your reminder is:  " + myController.text),
       ),
     );
+  }
+
+  _launchURL() async {
+    const url = 'https://epap.app/';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   // Future _showNotification() async {
