@@ -42,8 +42,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-
   DateTime selectedDate = DateTime.now();
 
   final BehaviorSubject<String> selectNotificationSubject =
@@ -135,7 +133,6 @@ class _MyHomePageState extends State<MyHomePage> {
             )
           ],
         ),
-        // backgroundColor: Colors.lightGreen,
         body: Center(
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -176,9 +173,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       await _initializeNotifications();
                     }),
               ),
-              // Padding(
-              //   padding: EdgeInsets.all(4.0),
-              //   child: new
               Container(
                 height: 220,
                 width: 220,
@@ -186,7 +180,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   'https://is5-ssl.mzstatic.com/image/thumb/Purple124/v4/42/d0/20/42d02062-d787-6c49-d74f-a9f3ee7ea160/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.png',
                 ),
               ),
-              // ),
               RaisedButton(
                 color: Colors.lightGreen,
                 textColor: Colors.white,
