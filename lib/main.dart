@@ -158,7 +158,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       });
                     }),
               ),
-              // Text(listOne.join(", ")),
               Padding(
                 padding: EdgeInsets.only(top: 15.0),
                 child: RaisedButton(
@@ -295,7 +294,7 @@ class _MyHomePageState extends State<MyHomePage> {
     await showDialog<void>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        content: Text(data == '' ? "no reminders" : listOne.join(", ")),
+        content: Text(data == ' ' ? "no reminders" : listOne.join(", ")),
         actions: <Widget>[
           FlatButton(
             onPressed: () {

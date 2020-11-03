@@ -11,7 +11,6 @@ class UserPreferences {
   SharedPreferences _prefs;
 
   var listOne = [];
-  var listTwo = [];
   DateTime date;
   String id;
 
