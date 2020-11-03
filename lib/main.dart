@@ -158,7 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       });
                     }),
               ),
-              Text(listOne.join(", ")),
+              // Text(listOne.join(", ")),
               Padding(
                 padding: EdgeInsets.only(top: 15.0),
                 child: RaisedButton(
