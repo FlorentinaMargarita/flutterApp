@@ -126,7 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
         appBar: AppBar(
           title: Text("Receipt Reminder Menu",
-              style: TextStyle(color: Colors.greenAccent)),
+              style: TextStyle(fontWeight: FontWeight.w600)),
           leading: Icon(Icons.account_balance_wallet_rounded),
           actions: <Widget>[
             IconButton(
@@ -135,12 +135,13 @@ class _MyHomePageState extends State<MyHomePage> {
             )
           ],
         ),
+        // backgroundColor: Colors.lightGreen,
         body: Center(
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
               Padding(
-                padding: EdgeInsets.all(10.0),
+                padding: EdgeInsets.only(top: 20.0),
                 child: TextField(
                     controller: myController,
                     decoration: InputDecoration(
@@ -149,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           borderRadius: BorderRadius.circular(32.0)),
                       hintText: 'Enter an EPAP-reminder',
                       contentPadding: new EdgeInsets.symmetric(
-                          vertical: 15.0, horizontal: 5.0),
+                          vertical: 5.0, horizontal: 5.0),
                     ),
                     onSubmitted: (String value) async {
                       UserPreferences().data = myController.text;
@@ -161,43 +162,34 @@ class _MyHomePageState extends State<MyHomePage> {
                     }),
               ),
               Text(listOne.join(", ")),
-              RaisedButton(
-                  textColor: Colors.white,
-                  padding: const EdgeInsets.all(20.0),
-                  color: CupertinoColors.systemGrey3,
-                  hoverColor: CupertinoColors.activeBlue,
-                  child: Text("What are my current reminders?",
-                      style: TextStyle(fontSize: 20)),
-                  onPressed: () async {
-                    await _getActiveNotifications();
-                    await _initializeNotifications();
-                  }),
               Padding(
-                padding: EdgeInsets.all(10.0),
-                child: new Container(
-                  color: Colors.grey[20],
-                  height: 200,
-                  width: 200,
-                  child: new Image.network(
-                    'https://is5-ssl.mzstatic.com/image/thumb/Purple124/v4/42/d0/20/42d02062-d787-6c49-d74f-a9f3ee7ea160/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.png',
-                  ),
+                padding: EdgeInsets.only(top: 15.0),
+                child: RaisedButton(
+                    color: Colors.lightGreen,
+                    padding: const EdgeInsets.all(15.0),
+                    textColor: Colors.white,
+                    hoverColor: CupertinoColors.activeBlue,
+                    child: Text("What are my current reminders?",
+                        style: TextStyle(fontSize: 20)),
+                    onPressed: () async {
+                      await _getActiveNotifications();
+                      await _initializeNotifications();
+                    }),
+              ),
+              // Padding(
+              //   padding: EdgeInsets.all(4.0),
+              //   child: new
+              Container(
+                height: 220,
+                width: 220,
+                child: new Image.network(
+                  'https://is5-ssl.mzstatic.com/image/thumb/Purple124/v4/42/d0/20/42d02062-d787-6c49-d74f-a9f3ee7ea160/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.png',
                 ),
               ),
+              // ),
               RaisedButton(
-                  child: Text("Cancel notification"),
-                  onPressed: () {
-                    setState(() {
-                      listOne = [];
-                      data = ' ';
-                    });
-                  }),
-              RaisedButton(
-                child: Text('Repeat notification every minute'),
-                onPressed: () async {
-                  await _repeatNotification(UserPreferences().data);
-                },
-              ),
-              RaisedButton(
+                color: Colors.lightGreen,
+                textColor: Colors.white,
                 onPressed: () async {
                   await flutterLocalNotificationsPlugin.zonedSchedule(
                       0,
@@ -222,6 +214,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: const Text('Pick a start date'),
               ),
               RaisedButton(
+                color: Colors.lightGreen,
+                textColor: Colors.white,
                 onPressed: () async {
                   await flutterLocalNotificationsPlugin.zonedSchedule(
                       0,
@@ -244,6 +238,27 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.pop(context);
                 },
                 child: const Text('Remind me daily'),
+              ),
+              RaisedButton(
+                color: Colors.lightGreen,
+                textColor: Colors.white,
+                child: Text('Remind me once a week'),
+                onPressed: () async {
+                  await _repeatNotification(UserPreferences().data);
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: RaisedButton(
+                    color: Colors.lightGreen,
+                    textColor: Colors.black,
+                    child: Text("Cancel notification"),
+                    onPressed: () {
+                      setState(() {
+                        listOne = [];
+                        data = ' ';
+                      });
+                    }),
               ),
             ])));
   }
