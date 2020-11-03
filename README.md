@@ -1,4 +1,4 @@
-# Habit Tracker App in Flutter
+# Reminder App in Flutter
 
 My first Flutter project.
 
