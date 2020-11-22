@@ -1,8 +1,6 @@
 # Reminder App in Flutter
 
-My first Flutter project.
-
-link to the video demo: https://drive.google.com/file/d/1LsJgCu12Xiuupy-fMHp4f-uaM0prmCOU/view?usp=sharing
+My first Flutter project. 
 
 ## Getting Started
 
