@@ -93,8 +93,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
     const NotificationDetails firstNotificationPlatformSpecifics =
         NotificationDetails(android: androidDetails);
-    await flutterLocalNotificationsPlugin.show(1, 'Epap-Client',
-        'ich weiss alles', firstNotificationPlatformSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+        1, 'Reminder', 'ich weiss alles', firstNotificationPlatformSpecifics);
   }
 
   _selectDate(BuildContext context) async {
@@ -105,7 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
         lastDate: DateTime(2025),
         helpText: "Pick a date, when we should remind you.",
         cancelText: "Cancel",
-        confirmText: "Remind Me Epap!");
+        confirmText: "Remind Me!");
     if (datePicked != null && datePicked != selectedDate)
       setState(() {
         selectedDate = datePicked;
@@ -145,7 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       icon: Icon(Icons.access_alarms),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(32.0)),
-                      hintText: 'Enter an EPAP-reminder',
+                      hintText: 'Enter a Reminder',
                       contentPadding: new EdgeInsets.symmetric(
                           vertical: 5.0, horizontal: 5.0),
                     ),
@@ -176,8 +176,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 height: 220,
                 width: 220,
                 child: new Image.network(
-                  'https://is5-ssl.mzstatic.com/image/thumb/Purple124/v4/42/d0/20/42d02062-d787-6c49-d74f-a9f3ee7ea160/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.png',
-                ),
+                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6gsj9kN5HVTdzgRn_cGopPjfMGVdFesMaCg&usqp=CAU'),
               ),
               RaisedButton(
                 color: Colors.lightGreen,
